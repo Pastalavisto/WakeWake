@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_calendar"
+        android:enabled="true"
+        android:icon="@drawable/mdi__calendar"
+        android:title="@string/calendar"/>
+    <item
+        android:id="@+id/navigation_alarm"
+        android:enabled="true"
+        android:icon="@drawable/mdi__alarm_clock"
+        android:title="@string/add_alarm"/>
+    <item
+        android:id="@+id/navigation_settings"
+        android:enabled="true"
+        android:icon="@drawable/material_symbols__settings"
+        android:title="@string/settings"/>
+</menu>

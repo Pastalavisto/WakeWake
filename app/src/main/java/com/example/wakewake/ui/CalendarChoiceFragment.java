@@ -66,17 +66,13 @@ public class CalendarChoiceFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_calendar_choice, container, false);
 
-        // Liaison des éléments de la vue
         EditText editText = rootView.findViewById(R.id.edit_text);
         Button submitButton = rootView.findViewById(R.id.submit_button);
 
-        // Définir un écouteur sur le bouton de soumission
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Récupérer le lien depuis l'EditText
                 String link = editText.getText().toString();
-                // Mettre à jour le modèle via le ViewModel
                 viewModel.setLink(link);
             }
         });

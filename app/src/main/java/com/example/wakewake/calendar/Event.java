@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -53,6 +55,10 @@ public abstract class Event {
 
     public void setLocation(String location) {
         Location = location;
+    }
+
+    public long getDuration() {
+        return ChronoUnit.MINUTES.between(DtStart, DtEnd);
     }
 
     public Optional<String> getProperty(String property) {

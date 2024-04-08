@@ -5,4 +5,5 @@
     <color name="event_background">#FF9800</color>
     <color name="day_text">#000000</color>
     <color name="day_background">#FFADD8E6</color>
+    <color name="event_current">#F48F36</color>
 </resources>

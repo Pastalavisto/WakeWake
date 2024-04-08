@@ -2,7 +2,9 @@ package com.example.wakewake.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +15,27 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.wakewake.CalendarChoiceViewModel;
+import com.example.wakewake.CalendarViewModel;
 import com.example.wakewake.R;
+import com.example.wakewake.SettingsFragment;
 import com.example.wakewake.calendar.Event;
 import com.example.wakewake.calendar.Utils;
 import com.example.wakewake.data.CalendarDay;
 import com.example.wakewake.data.CalendarSingleton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CalendarFragment extends Fragment {
 
@@ -38,10 +48,11 @@ public class CalendarFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    ArrayList<CalendarDay> days;
     RecyclerView recyclerDaysView;
     LinearLayoutManager layoutDaysManager;
     CalendarDaysAdapter daysAdapter;
+
+    private CalendarViewModel viewModel;
 
 
     public CalendarFragment() {
@@ -73,7 +84,7 @@ public class CalendarFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        viewModel = new ViewModelProvider(this).get(CalendarViewModel .class);
     }
 
     @Override
@@ -81,38 +92,46 @@ public class CalendarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View viewRoot = inflater.inflate(R.layout.fragment_calendar, container, false);
-        FloatingActionButton fab = viewRoot.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new AlarmFragment());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
-        });
         return viewRoot;
+    }
+
+    private void displayfragment(Fragment fragment) {
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment fragment;
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_calendar) {
+                fragment = new CalendarFragment();
+            } else if (itemId == R.id.navigation_alarm) {
+                fragment = new AlarmFragment();
+            } else if (itemId == R.id.navigation_settings) {
+                fragment = new SettingsFragment();
+            } else {
+                fragment = new CalendarFragment();
+            }
+            displayfragment(fragment);
+            return true;
+        });
+        
         recyclerDaysView = view.findViewById(R.id.recyclerDayView);
-        days = CalendarSingleton.getInstance().getDays();
+
 
         // Set up the days recycler view
         layoutDaysManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        ArrayList<String> daysString = new ArrayList<>();
-        for (CalendarDay day : days) {
-            daysString.add(Utils.formatDateCalendar(day.getDateTime()));
-        }
-        daysAdapter = new CalendarDaysAdapter(daysString);
+
+        daysAdapter = new CalendarDaysAdapter(viewModel.getDaysString());
         recyclerDaysView.setLayoutManager(layoutDaysManager);
         recyclerDaysView.setAdapter(daysAdapter);
 
         // Set up the view pager
-        CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(getContext(), days);
+        CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(getContext(), viewModel.getDays());
         ViewPager viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -142,8 +161,8 @@ public class CalendarFragment extends Fragment {
 
     class CalendarDaysAdapter extends RecyclerView.Adapter<CalendarDaysAdapter.ViewHolder> {
 
-        ArrayList<String> days;
-        public CalendarDaysAdapter(ArrayList<String> days) {
+        List<String> days;
+        public CalendarDaysAdapter(List<String> days) {
             super();
             this.days = days;
         }
@@ -212,7 +231,15 @@ public class CalendarFragment extends Fragment {
             for (Event event : day.getEvents()) {
                 View eventView = inflater.inflate(R.layout.event_item, events, false);
                 TextView eventTitle = eventView.findViewById(R.id.eventTitle);
-                eventTitle.setText(event.getSummary());
+                LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+                if (event.getDtStart().isBefore(now) && event.getDtEnd().isAfter(now)) {
+                    eventTitle.setText(event.getSummary() + " (En cours)");
+                } else {
+                    Log.d("Event", LocalDateTime.now(ZoneId.of("UTC")).toString());
+                    Log.d("Event", event.getDtStart().toString());
+                    Log.d("Event", event.getDtEnd().toString());
+                    eventTitle.setText(event.getSummary());
+                }
                 TextView eventTime = eventView.findViewById(R.id.eventTime);
                 eventTime.setText(Utils.formatTime(event.getDtStart()) + " - " + Utils.formatTime(event.getDtEnd()));
                 TextView eventDescription = eventView.findViewById(R.id.eventDescription);
