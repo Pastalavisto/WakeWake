@@ -2,7 +2,6 @@ package com.example.wakewake.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,24 +12,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.wakewake.CalendarChoiceViewModel;
 import com.example.wakewake.CalendarViewModel;
 import com.example.wakewake.R;
-import com.example.wakewake.SettingsFragment;
 import com.example.wakewake.calendar.Event;
 import com.example.wakewake.calendar.Utils;
 import com.example.wakewake.data.CalendarDay;
-import com.example.wakewake.data.CalendarSingleton;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -102,23 +94,6 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment fragment;
-            int itemId = item.getItemId();
-            if (itemId == R.id.navigation_calendar) {
-                fragment = new CalendarFragment();
-            } else if (itemId == R.id.navigation_alarm) {
-                fragment = new AlarmFragment();
-            } else if (itemId == R.id.navigation_settings) {
-                fragment = new SettingsFragment();
-            } else {
-                fragment = new CalendarFragment();
-            }
-            displayfragment(fragment);
-            return true;
-        });
         
         recyclerDaysView = view.findViewById(R.id.recyclerDayView);
 

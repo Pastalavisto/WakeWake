@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -15,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.wakewake.CalendarChoiceViewModel;
 import com.example.wakewake.R;
 
-public class CalendarChoiceFragment extends Fragment {
+public class CalendarChoiceFragment extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,6 +89,8 @@ public class CalendarChoiceFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, new CalendarFragment());
                 fragmentTransaction.commit();
+                MainActivity.binding.bottomNavigationView.setSelectedItemId(R.id.navigation_calendar);
+                dismiss();
             }
         });
     }
