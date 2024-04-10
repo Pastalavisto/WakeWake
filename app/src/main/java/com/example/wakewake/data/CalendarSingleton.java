@@ -8,6 +8,7 @@ import com.example.wakewake.calendar.Utils;
 import com.example.wakewake.calendar.event.VAlarm;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -53,6 +54,8 @@ public final class CalendarSingleton {
         List<Event> events = getCalendar().getEvents();
         events = events.stream().sorted(componentComparator).collect(Collectors.toList());
         for (Event event : events) {
+            if (event.getDtStart().isBefore(LocalDateTime.now(ZoneId.of("UTC"))))
+                continue;
             boolean found = false;
             for (CalendarDay day : days) {
                 String date = Utils.formatDateCalendar(day.getDateTime());

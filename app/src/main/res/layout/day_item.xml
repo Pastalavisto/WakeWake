@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="125dp"
     android:layout_height="50dp"
-    app:cardBackgroundColor="@color/day_background">
+    app:cardCornerRadius="0dp"
+    style="@style/day_item">
 
     <TextView
         android:id="@+id/dayText"
+        style="@style/day_item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="TextView"
-        android:textColor="@color/day_text" />
+        android:text="TextView" />
 </androidx.cardview.widget.CardView>

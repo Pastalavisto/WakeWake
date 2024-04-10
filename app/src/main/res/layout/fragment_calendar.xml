@@ -14,7 +14,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerDayView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp">
 
         </androidx.recyclerview.widget.RecyclerView>
 
