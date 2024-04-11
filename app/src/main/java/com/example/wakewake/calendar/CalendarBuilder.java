@@ -63,7 +63,6 @@ public class CalendarBuilder {
         }
         Calendar calendar = new Calendar(events);
         Log.i("CalendarBuilder", "Calendar built from preferences");
-        Log.i("CalendarBuilder", calendar.toString());
         return calendar;
     }
 

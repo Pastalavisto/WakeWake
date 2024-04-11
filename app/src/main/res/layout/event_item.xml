@@ -4,9 +4,9 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/eventItemLayout"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@drawable/event_background"
         android:orientation="vertical"
         style="@style/event_item">
 
