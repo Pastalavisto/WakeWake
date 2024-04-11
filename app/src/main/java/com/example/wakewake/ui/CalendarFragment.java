@@ -87,10 +87,6 @@ public class CalendarFragment extends Fragment {
         return viewRoot;
     }
 
-    private void displayfragment(Fragment fragment) {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -209,10 +205,8 @@ public class CalendarFragment extends Fragment {
                 LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
                 if (event.getDtStart().isBefore(now) && event.getDtEnd().isAfter(now)) {
                     eventTitle.setText(event.getSummary() + " (En cours)");
+                    eventView.getContext().setTheme(R.style.event_item_current);
                 } else {
-                    Log.d("Event", LocalDateTime.now(ZoneId.of("UTC")).toString());
-                    Log.d("Event", event.getDtStart().toString());
-                    Log.d("Event", event.getDtEnd().toString());
                     eventTitle.setText(event.getSummary());
                 }
                 TextView eventTime = eventView.findViewById(R.id.eventTime);

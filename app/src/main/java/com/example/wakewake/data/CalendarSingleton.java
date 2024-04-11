@@ -54,7 +54,7 @@ public final class CalendarSingleton {
         List<Event> events = getCalendar().getEvents();
         events = events.stream().sorted(componentComparator).collect(Collectors.toList());
         for (Event event : events) {
-            if (event.getDtStart().isBefore(LocalDateTime.now(ZoneId.of("UTC"))))
+            if (event.getDtEnd().isBefore(LocalDateTime.now(ZoneId.of("UTC"))))
                 continue;
             boolean found = false;
             for (CalendarDay day : days) {
