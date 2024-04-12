@@ -32,4 +32,27 @@
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="day_item" parent="Base.Theme.WakeWake">
+        <item name="android:backgroundTint">@color/primary_dark</item>
+    </style>
+
+    <style name="day_item_text" parent="Base.Theme.WakeWake">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_height">20dp</item>
+    </style>
+
+    <style name="alarm_item" parent="Base.Theme.WakeWake">
+        <item name="android:background">@drawable/alarm_background</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:elevation">5dp</item>
+    </style>
+
+    <style name="alarm_item_text" parent="Base.Theme.WakeWake">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_height">20dp</item>
+    </style>
 </resources>

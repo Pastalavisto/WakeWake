@@ -2,24 +2,33 @@ package com.example.wakewake.ui;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.wakewake.AlarmViewModel;
 import com.example.wakewake.R;
+import com.example.wakewake.calendar.Utils;
+import com.example.wakewake.calendar.event.VAlarm;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class AlarmFragment extends Fragment {
+import java.util.List;
 
+public class AlarmFragment extends Fragment {
     private AlarmViewModel viewModel;
 
     public static AlarmFragment newInstance() {
@@ -49,7 +58,24 @@ public class AlarmFragment extends Fragment {
                 popTimePicker(view);
             }
         });
+        List<VAlarm> alarms = viewModel.getAlarms();
+        LinearLayout alarmsLayout = view.findViewById(R.id.alarmList);
+        alarmsLayout.removeAllViews();
+        for (VAlarm alarm : alarms) {
+            addAlarm(alarmsLayout, alarm);
+        }
+    }
 
+    private void addAlarm(LinearLayout alarmsLayout, VAlarm alarm) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View alarmView = inflater.inflate(R.layout.alarm_item, alarmsLayout, false);
+        TextView alarmTime = alarmView.findViewById(R.id.alarmTime);
+        alarmTime.setText(Utils.formatTime(alarm.getDtStart()));
+        TextView alarmDate = alarmView.findViewById(R.id.alarmDate);
+        alarmDate.setText(alarm.getSummary());
+        TextView alarmCountDown = alarmView.findViewById(R.id.alarmCountdown);
+        alarmCountDown.setText(Utils.formatCountDown(alarm.getDtStart()));
+        alarmsLayout.addView(alarmView);
     }
 
     public void popTimePicker(View view) {
@@ -69,5 +95,4 @@ public class AlarmFragment extends Fragment {
         timePickerDialog.setTitle("Heure du réveil");
         timePickerDialog.show();
     }
-
 }

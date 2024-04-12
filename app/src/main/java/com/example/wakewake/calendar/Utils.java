@@ -38,4 +38,9 @@ public class Utils {
         String dateString = utcDateTime.format(DateTimeFormatter.ofPattern(patternIcal));
         return dateString;
     }
+
+    public static String formatCountDown(LocalDateTime date) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+        return now.until(date, java.time.temporal.ChronoUnit.DAYS) + " days";
+    }
 }

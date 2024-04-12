@@ -7,9 +7,11 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModel;
 
 import com.example.wakewake.calendar.CalendarSaver;
+import com.example.wakewake.calendar.event.VAlarm;
 import com.example.wakewake.data.CalendarSingleton;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class AlarmViewModel extends AndroidViewModel {
@@ -33,5 +35,9 @@ public class AlarmViewModel extends AndroidViewModel {
     public void createAlarm(int hour, int minute) {
         CalendarSingleton.getInstance().createAutomaticAlarmBeforeFistEvent(hour, minute, "Réveil automatique");
         CalendarSaver.saveCalendar(getApplication(), CalendarSingleton.getInstance().getCalendar());
+    }
+
+    public List<VAlarm> getAlarms() {
+        return CalendarSingleton.getInstance().getCalendar().getVAlarms();
     }
 }

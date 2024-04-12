@@ -10,7 +10,6 @@ import java.util.List;
 
 public class Calendar {
     private List<Event> events;
-
     public Calendar(List<Event> events) {
         this.events = events;
     }
@@ -29,7 +28,7 @@ public class Calendar {
         return result;
     }
 
-    public List<VAlarm> getVAlarm() {
+    public List<VAlarm> getVAlarms() {
         List<VAlarm> result = new ArrayList<>();
         for (Event event : events) {
             if (event instanceof VAlarm) {
