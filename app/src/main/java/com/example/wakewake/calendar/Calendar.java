@@ -49,11 +49,10 @@ public class Calendar {
     @Override
     public String toString() {
         String res = "";
-
         for (Event event : getEvents()) {
             res += event + "\n";
         }
-        Log.d("Calendar", res);
         return res;
     }
+
 }

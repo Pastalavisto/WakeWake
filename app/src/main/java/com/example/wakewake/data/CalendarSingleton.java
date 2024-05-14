@@ -1,6 +1,7 @@
 package com.example.wakewake.data;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.wakewake.calendar.Calendar;
 import com.example.wakewake.calendar.Event;
@@ -18,7 +19,9 @@ public final class CalendarSingleton {
     private static CalendarSingleton instance = null;
     private String calendarLink;
     private Calendar calendar;
+    private List<Alarm> alarms = new ArrayList<>();
     private static final Comparator<Event> componentComparator = Comparator.comparing(o -> o.getProperty("DTSTART").get());
+    private static final Comparator<Alarm> alarmComparator = Comparator.comparing(Alarm::getDurationNextAlarm);
 
     private CalendarSingleton() {
         this.calendar = null;
@@ -75,38 +78,48 @@ public final class CalendarSingleton {
                 days.add(new CalendarDay((LocalDateTime) event.getDtStart(), newEvents));
             }
         }
-        return days;
-    }
-    public void createAutomaticAlarmBeforeFistEvent(int hour, int minute, String summary) {
-        if (getCalendar() == null) {
-            Log.i("CalendarSingleton", "createAutomaticAlarmBeforeFistEvent: calendar is null");
-            return;
-        }
-        ArrayList<CalendarDay> days = getDays();
-        if (days.isEmpty()) {
-            Log.i("CalendarSingleton", "createAutomaticAlarmBeforeFistEvent: no events");
-            return;
-        }
-        for (CalendarDay day : days) {
-            if (!day.getEvents().isEmpty()) {
-                LocalDateTime startDate = day.getDateTime();
-                addAlarm(summary, startDate.minusHours(hour).minusMinutes(minute), startDate.minusHours(hour).minusMinutes(minute), null, null);
+        for (Alarm alarm : getInstance().getAlarms()) {
+            for (CalendarDay day : days) {
+                if (alarm.isOn() && LocalDateTime.now(ZoneId.of("UTC")).isBefore(day.getDateTime().minusMinutes(alarm.getDuration()))) {
+                    day.addVAlarm(alarm);
+                }
             }
         }
+        return days;
+    }
+    public Alarm createAutomaticAlarm(int hour, int minute) {
+        for (Alarm alarm : alarms) {
+            if (alarm.getDuration() == hour * 60L + minute) {
+                alarm.setOn(true);
+                return null;
+            }
+        }
+        Alarm alarm = new Alarm(hour * 60L + minute, true);
+        getInstance().getAlarms().add(alarm);
+        return alarm;
     }
 
-    public void addAlarm(String summary, LocalDateTime startDate, LocalDateTime endDate, String location, String description) {
-        Event alarm = new VAlarm();
-        alarm.setSummary(summary);
-        alarm.setDtStart(startDate);
-        alarm.setDtEnd(endDate);
-        if (location != null) {
-            alarm.setLocation(location);
-        }
-        if (description != null) {
-            alarm.setDescription(description);
-        }
-        getCalendar().addEvent(alarm);
+    public List<Alarm> getAlarmsSorted() {
+        return this.alarms.stream().sorted(alarmComparator).collect(Collectors.toList());
     }
 
+    public List<Alarm> getAlarms() {
+        return this.alarms;
+    }
+
+    public void setAlarms(List<Alarm> alarms) {
+        this.alarms = alarms;
+    }
+
+    public String getCalendarLink() {
+        return calendarLink;
+    }
+
+    public Alarm getNextAlarm() {
+        return this.alarms.stream().filter(Alarm::isOn).min(alarmComparator).orElse(null);
+    }
+
+    public void deleteAlarm(Alarm alarm) {
+        this.alarms.remove(alarm);
+    }
 }

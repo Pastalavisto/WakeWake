@@ -223,15 +223,21 @@ public class CalendarFragment extends Fragment {
                 String location ="", description = "";
                 if (event.getLocation() != null)
                     location = event.getLocation();
-                if (event.getDescription() != null)
-                    description = event.getDescription();
+                if (event.getDescription() != null){
+                    String descriptionString = event.getDescription();
+                    String[] parts = descriptionString.split("\\\\n");
+                    for (int i = 2; i < parts.length-1; i++) {
+                        description +=  parts[i] + " ";
+                    }
+                }
+
                 String fullDescription = "";
                 if (location.equals("")){
                     fullDescription = description;
                 } else if (description.equals("")) {
                     fullDescription = location;
                 } else {
-                    fullDescription = location + " -" + description;
+                    fullDescription = location + " - " + description;
                 }
                 if (fullDescription.length() <= 45)
                     eventDescription.setText(fullDescription);

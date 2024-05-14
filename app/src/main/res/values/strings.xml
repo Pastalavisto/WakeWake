@@ -5,5 +5,8 @@
     <string name="add_alarm">Alarmes</string>
     <string name="calendar">Calendrier</string>
     <string name="settings">Paramètres</string>
-
+    <string name="calendar_url">URL de l\'agenda (ics)</string>
+    <string name="default_calendar_name">Calendrier ics</string>
+    <string name="stop_alarm">"Arrêter "</string>
+    <string name="stop_alarm_text">It\'s time for school !</string>
 </resources>

@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.example.wakewake.calendar.event.VAlarm;
 import com.example.wakewake.calendar.event.VEvent;
+import com.example.wakewake.data.Alarm;
+import com.example.wakewake.data.CalendarSingleton;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,8 +36,6 @@ public class CalendarBuilder {
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("BEGIN:VEVENT")) {
                     events.add(buildVEvent(reader));
-                } else if (line.startsWith("BEGIN:VALARM")) {
-                    events.add(buildVAlarm(reader));
                 }
             }
         }
@@ -54,8 +56,6 @@ public class CalendarBuilder {
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("BEGIN:VEVENT")) {
                     events.add(buildVEvent(reader));
-                } else if (line.startsWith("BEGIN:VALARM")) {
-                    events.add(buildVAlarm(reader));
                 }
             }
         } catch (IOException e) {
@@ -74,7 +74,7 @@ public class CalendarBuilder {
                 return event;
             }
             String[] parts = line.split(":");
-            if (parts.length != 2) {
+            if (parts.length < 2) {
                 continue;
             }
             String key = parts[0];
@@ -103,12 +103,33 @@ public class CalendarBuilder {
         }
         return event;
     }
+    public static List<Alarm> buildAlarms(SharedPreferences mPrefs) {
+        List<Alarm> alarms = new ArrayList<>();
+        String alarmsString = mPrefs.getString("alarms", "");
+        if (alarmsString.isEmpty()) {
+            Log.i("CalendarBuilder", "No alarms in preferences");
+        }
+        Reader inputString = new StringReader(alarmsString);
+        BufferedReader reader = new BufferedReader(inputString);
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("BEGIN:ALARM")) {
+                    alarms.add(buildAlarm(reader));
+                }
+            }
+        } catch (IOException e) {
+            Log.e("CalendarBuilder", "Error reading alarms from preferences", e);
+        }
+        Log.i("CalendarBuilder", "Alarms built from preferences");
+        return alarms;
+    }
 
-    private static VAlarm buildVAlarm(BufferedReader reader) throws IOException {
-        VAlarm alarm = new VAlarm();
+    private static Alarm buildAlarm(BufferedReader reader) throws IOException {
+        Alarm alarm = new Alarm();
         String line;
         while ((line = reader.readLine()) != null) {
-            if (line.startsWith("END:VALARM")) {
+            if (line.startsWith("END:ALARM")) {
                 return alarm;
             }
             String[] parts = line.split(":");
@@ -120,25 +141,16 @@ public class CalendarBuilder {
             if (value.equals("null")) {
                 continue;
             }
-            ZonedDateTime zonedDateTime;
             switch (key) {
-                case "SUMMARY":
-                    alarm.setSummary(value);
+                case "DURATION":
+                    alarm.setDuration(Long.parseLong(value));
                     break;
-                case "DTSTART":
-                    alarm.setDtStart(parseDate(value));
-                    break;
-                case "DTEND":
-                    alarm.setDtEnd(parseDate(value));
-                    break;
-                case "DESCRIPTION":
-                    alarm.setDescription(value);
-                    break;
-                case "LOCATION":
-                    alarm.setLocation(value);
+                case "ON":
+                    alarm.setOn(Boolean.parseBoolean(value));
                     break;
             }
         }
+
         return alarm;
     }
 }

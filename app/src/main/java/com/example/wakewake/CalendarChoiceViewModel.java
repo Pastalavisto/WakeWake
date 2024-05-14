@@ -41,12 +41,12 @@ public class CalendarChoiceViewModel extends AndroidViewModel {
                 Calendar calendar;
                 InputStream input = null;
                 try {
-                    HttpURLConnection connection = (HttpURLConnection) new URL(getLink()).openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) new URL(link).openConnection();
                     connection.setRequestMethod("GET");
                     calendar = CalendarBuilder.build(connection.getInputStream());
-                    isDownloaded.postValue(true);
-                    CalendarSingleton.getInstance().setCalendar(calendar, getLink());
+                    CalendarSingleton.getInstance().setCalendar(calendar, link);
                     CalendarSaver.saveCalendar(getApplication(), calendar);
+                    isDownloaded.postValue(true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

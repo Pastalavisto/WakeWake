@@ -1,5 +1,6 @@
 package com.example.wakewake.ui;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
@@ -13,10 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -24,6 +28,7 @@ import com.example.wakewake.AlarmViewModel;
 import com.example.wakewake.R;
 import com.example.wakewake.calendar.Utils;
 import com.example.wakewake.calendar.event.VAlarm;
+import com.example.wakewake.data.Alarm;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -58,23 +63,47 @@ public class AlarmFragment extends Fragment {
                 popTimePicker(view);
             }
         });
-        List<VAlarm> alarms = viewModel.getAlarms();
+        List<Alarm> alarms = viewModel.getAlarms();
         LinearLayout alarmsLayout = view.findViewById(R.id.alarmList);
         alarmsLayout.removeAllViews();
-        for (VAlarm alarm : alarms) {
+        for (Alarm alarm : alarms) {
             addAlarm(alarmsLayout, alarm);
         }
     }
 
-    private void addAlarm(LinearLayout alarmsLayout, VAlarm alarm) {
+    private void addAlarm(LinearLayout alarmsLayout, Alarm alarm) {
+        VAlarm valarm = alarm.getVAlarm();
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View alarmView = inflater.inflate(R.layout.alarm_item, alarmsLayout, false);
         TextView alarmTime = alarmView.findViewById(R.id.alarmTime);
-        alarmTime.setText(Utils.formatTime(alarm.getDtStart()));
-        TextView alarmDate = alarmView.findViewById(R.id.alarmDate);
-        alarmDate.setText(alarm.getSummary());
-        TextView alarmCountDown = alarmView.findViewById(R.id.alarmCountdown);
-        alarmCountDown.setText(Utils.formatCountDown(alarm.getDtStart()));
+        alarmTime.setText(alarm.getDurationString() + " avant le début des cours");
+        TextView alarmDate = alarmView.findViewById(R.id.alarmDescription);
+        if (valarm == null) {
+            alarmDate.setText("Désactivé");
+        } else {
+            alarmDate.setText(valarm.getSummary() + " " + (alarm.isOn()?"dans "+Utils.formatCountDown(valarm.getDtStart()):"Désactivé"));
+        }
+        alarmView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Supprimer l'alarme
+                Log.i("AlarmFragment", "Alarm clicked");
+                viewModel.deleteAlarm(alarm);
+                MainActivity.binding.bottomNavigationView.setSelectedItemId(R.id.navigation_alarm);
+            }
+        });
+
+        SwitchCompat alarmSwitch = alarmView.findViewById(R.id.alarmSwitch);
+        alarmSwitch.setChecked(alarm.isOn());
+
+        alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                alarm.toggle();
+                MainActivity.binding.bottomNavigationView.setSelectedItemId(R.id.navigation_alarm);
+            }
+        });
+
         alarmsLayout.addView(alarmView);
     }
 
@@ -85,6 +114,7 @@ public class AlarmFragment extends Fragment {
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
             {
                 viewModel.createAlarm(selectedHour, selectedMinute);
+                MainActivity.binding.bottomNavigationView.setSelectedItemId(R.id.navigation_alarm);
             }
         };
 

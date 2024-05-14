@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -41,6 +42,22 @@ public class Utils {
 
     public static String formatCountDown(LocalDateTime date) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
-        return now.until(date, java.time.temporal.ChronoUnit.DAYS) + " days";
+        long seconds = ChronoUnit.SECONDS.between(now, date);
+        long days = seconds / 86400;
+        long hours = (seconds % 86400) / 3600;
+        long minutes = ((seconds % 86400) % 3600) / 60;
+        String res = "";
+        if (days > 0) {
+            res += days + "j ";
+        }
+        if (hours > 0) {
+            res += hours + "h ";
+        }
+        if (minutes > 0) {
+            res += minutes + "m";
+        } else {
+            res += "moins d'une minute";
+        }
+        return res;
     }
 }

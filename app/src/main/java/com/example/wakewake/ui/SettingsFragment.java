@@ -42,6 +42,7 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnCalendar=view.findViewById(R.id.changeCalendarButton);
+        btnCalendar.setText(btnCalendar.getText() + "\n" + viewModel.getCalendarUrl());
         btnCalendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
